@@ -2,12 +2,12 @@
 
 rsyncfun () {
 	job=${3##*/}
-	echo ">>> `date`"
+	echo ">>> `date`" &>> $3
         rsync -avuh --progress --stats $1 $2 &>> $3
 	if [ $? -eq 0 ]; then
-        	tail -20 $3 | mail -s "${job%.*} job is done!" -t "ayman.elkhodiery@kaust.edu.sa"
+        	tail -20 $3 | mail -s "${job%.*} job is done!" -t $4
 	else
-		tail -10 $3 | mail -s "${job%.*} backup terminated with error" -t "ayman.elkhodiery@kaust.edu.sa"
+		tail -10 $3 | mail -s "${job%.*} backup terminated with error" -t $4
 	fi
 }
 
@@ -15,35 +15,80 @@ lnb () {
         src="/home/khodieaf/ayman/PhD/lnb"
         dest="/home/khodieaf/Dropbox/Public/"
         log="/home/khodieaf/rsync_logs/dropbox_lnb.log"
-        rsyncfun $src $dest $log
+	email=$1
+        rsyncfun $src $dest $log $email
 }
 
 home () {
         src="/home/khodieaf"
         dest="sshd@10.75.123.142:/shares/TimeMachineBackup/backup/"
         log="/home/khodieaf/rsync_logs/home.log"
-        rsyncfun $src $dest $log
+	email=$1
+        rsyncfun $src $dest $log $email
 }
 
 d1 () {
         src="/media/khodieaf/D1"
         dest="sshd@10.75.123.142:/shares/TimeMachineBackup/backup/"
         log="/home/khodieaf/rsync_logs/d1.log"
-        rsyncfun $src $dest $log
+	email=$1
+        rsyncfun $src $dest $log $email
 }
 
 d2 () {
         src="/media/khodieaf/D2"
         dest="sshd@10.75.123.142:/shares/TimeMachineBackup/backup/"
         log="/home/khodieaf/rsync_logs/d2.log"
-        rsyncfun $src $dest $log
+	email=$1
+        rsyncfun $src $dest $log $email
 }
 
 d3 () {
         src="/media/khodieaf/D3"
         dest="sshd@10.75.123.142:/shares/TimeMachineBackup/backup/"
         log="/home/khodieaf/rsync_logs/d3.log"
-        rsyncfun $src $dest $log
+	email=$1
+        rsyncfun $src $dest $log $email
 }
 
-$1 &
+usage () {
+	cat << EOF
+	usage: bakup -t DIRECTORY/DRIVE<home, d1, d2, d3> -m E-MAIL_ADDRESS
+	This script backs up a directory to a standard back up drive defined in the script itself.
+	Options:
+		-h : prints this message.
+		-t : which directory/drive to back up; home, d1, d2 or d3
+		-m : e-mail address that recieves an e-mail upon task completion
+EOF
+}
+
+while getopts ":ht:m:" opt; do
+	case $opt in
+		h)
+		  usage
+		  exit 1
+		  ;;
+		t) 
+		  target=$OPTARG
+		  ;;
+		m)
+		  mail=$OPTARG
+		  ;;
+		\?)
+		  echo "Invalid argument: -$OPTARG" >&2
+		  usage
+		  exit 1
+		  ;;
+	esac
+done
+
+if [ -z $mail ]; then
+	if [ -z $target ]; then
+		usage
+		exit 1
+	else
+		mail="ayman.elkhodiery@kaust.edu.sa"
+	fi
+fi
+
+$target $mail &
