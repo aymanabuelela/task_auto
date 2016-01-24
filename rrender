@@ -1,0 +1,8 @@
+#!/usr/bin/Rscript
+
+library(rmarkdown)
+
+args = commandArgs(trailingOnly = T)
+file = args[1]
+
+rmarkdown::render(file)

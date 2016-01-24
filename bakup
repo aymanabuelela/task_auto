@@ -1,0 +1,49 @@
+#!/bin/bash
+
+rsyncfun () {
+	job=${3##*/}
+	echo ">>> `date`"
+        rsync -avuh --progress --stats $1 $2 &>> $3
+	if [ $? -eq 0 ]; then
+        	tail -20 $3 | mail -s "${job%.*} job is done!" -t "ayman.elkhodiery@kaust.edu.sa"
+	else
+		tail -10 $3 | mail -s "${job%.*} backup terminated with error" -t "ayman.elkhodiery@kaust.edu.sa"
+	fi
+}
+
+lnb () {
+        src="/home/khodieaf/ayman/PhD/lnb"
+        dest="/home/khodieaf/Dropbox/Public/"
+        log="/home/khodieaf/rsync_logs/dropbox_lnb.log"
+        rsyncfun $src $dest $log
+}
+
+home () {
+        src="/home/khodieaf"
+        dest="sshd@10.75.123.142:/shares/TimeMachineBackup/backup/"
+        log="/home/khodieaf/rsync_logs/home.log"
+        rsyncfun $src $dest $log
+}
+
+d1 () {
+        src="/media/khodieaf/D1"
+        dest="sshd@10.75.123.142:/shares/TimeMachineBackup/backup/"
+        log="/home/khodieaf/rsync_logs/d1.log"
+        rsyncfun $src $dest $log
+}
+
+d2 () {
+        src="/media/khodieaf/D2"
+        dest="sshd@10.75.123.142:/shares/TimeMachineBackup/backup/"
+        log="/home/khodieaf/rsync_logs/d2.log"
+        rsyncfun $src $dest $log
+}
+
+d3 () {
+        src="/media/khodieaf/D3"
+        dest="sshd@10.75.123.142:/shares/TimeMachineBackup/backup/"
+        log="/home/khodieaf/rsync_logs/d3.log"
+        rsyncfun $src $dest $log
+}
+
+$1 &
