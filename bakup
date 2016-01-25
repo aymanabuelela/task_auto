@@ -52,13 +52,13 @@ d3 () {
 }
 
 usage () {
-	cat << EOF
-	usage: bakup -t DIRECTORY/DRIVE<home, d1, d2, d3> -m E-MAIL_ADDRESS
-	This script backs up a directory to a standard back up drive defined in the script itself.
-	Options:
-		-h : prints this message.
-		-t : which directory/drive to back up; home, d1, d2 or d3
-		-m : e-mail address that recieves an e-mail upon task completion
+cat << EOF
+usage: bakup -t DIRECTORY/DRIVE<home, d1, d2, d3> -m E-MAIL_ADDRESS
+This script backs up a directory to a standard back up drive defined in the script itself.
+Options:
+	-h : prints this message.
+	-t : which directory/drive to back up; home, d1, d2 or d3
+	-m : e-mail address that recieves an e-mail upon task completion
 EOF
 }
 
